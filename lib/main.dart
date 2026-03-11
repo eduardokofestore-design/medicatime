@@ -104,21 +104,52 @@ class MyApp extends StatelessWidget {
         title: 'MedicaTime',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          scaffoldBackgroundColor: Colors.lightGreenAccent,
+          fontFamily: 'Roboto',
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.lightGreenAccent,
+            seedColor: Color(0xFF2E7D32),
+            secondary: Color(0xFF81C784),
+            brightness: Brightness.light,
           ),
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.lightGreenAccent,
-            foregroundColor: Colors.black,
+          scaffoldBackgroundColor: Color(0xFFF4FBF6),
+          appBarTheme: AppBarTheme(
+            backgroundColor: Color(0xFF2E7D32),
+            foregroundColor: Colors.white,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
+              backgroundColor: Color(0xFF2E7D32),
+              foregroundColor: Colors.white,
+            ),
+          ),
+          cardColor: Color(0xFFF4FBF6),
+        ),
+        darkTheme: ThemeData(
+          fontFamily: 'Roboto',
+          colorScheme: ColorScheme(
+            primary: Color(0xFF81C784),
+            onPrimary: Colors.black,
+            secondary: Color(0xFF81C784),
+            onSecondary: Colors.black,
+            surface: Color(0xFF1E1E1E),
+            onSurface: Color(0xFFFFFFFF),
+            error: Colors.red,
+            onError: Colors.white,
+            brightness: Brightness.dark,
+          ),
+          scaffoldBackgroundColor: Color(0xFF121212),
+          appBarTheme: AppBarTheme(
+            backgroundColor: Color(0xFF1E1E1E),
+            foregroundColor: Color(0xFFFFFFFF),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF81C784),
               foregroundColor: Colors.black,
             ),
           ),
+          cardColor: Color(0xFF1E1E1E),
         ),
+        themeMode: ThemeMode.system,
         initialRoute: '/',
         routes: {
           '/': (context) => const AuthWrapper(),
