@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -28,16 +30,20 @@ class HomeScreen extends StatelessWidget {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: data['photoUrl'] != null
-                        ? NetworkImage(data['photoUrl'])
-                        : null,
-                    child: data['photoUrl'] == null
-                        ? Icon(Icons.person, size: 50)
-                        : null,
-                  ),
                   Text('Bem-vindo, ${data['name']}!'),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed('/medications');
+                    },
+                    child: Text('Gerenciar Medicações'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed('/history');
+                    },
+                    child: Text('Ver Histórico'),
+                  ),
                 ],
               );
             }

@@ -1,38 +1,42 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import 'dart:async';
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   final _nameController = TextEditingController();
-  File? _image;
-  final picker = ImagePicker();
+
+  StreamSubscription? _userSubscription;
 
   @override
   void initState() {
     super.initState();
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    authProvider.getUserData().listen((snapshot) {
-      if (snapshot.exists) {
-        _nameController.text = snapshot['name'] ?? '';
-      }
+
+    Future.microtask(() {
+      final authProvider =
+          Provider.of<AuthProvider>(context, listen: false);
+
+      _userSubscription =
+          authProvider.getUserData().listen((snapshot) {
+        if (snapshot.exists) {
+          _nameController.text = snapshot['name'] ?? '';
+        }
+      });
     });
   }
 
-  Future getImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      }
-    });
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _userSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -40,42 +44,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Perfil - MedicaTime')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      appBar: AppBar(
+        title: const Text('Perfil - MedicaTime'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            GestureDetector(
-              onTap: getImage,
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: _image != null ? FileImage(_image!) : null,
-                child: _image == null ? Icon(Icons.camera_alt, size: 50) : null,
-              ),
+
+            const SizedBox(height: 20),
+
+            const CircleAvatar(
+              radius: 40,
+              child: Icon(Icons.person, size: 40),
             ),
+
+            const SizedBox(height: 30),
+
+            /// Nome
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Nome'),
+              decoration: const InputDecoration(
+                labelText: 'Nome',
+                prefixIcon: Icon(Icons.person),
+              ),
             ),
-            SizedBox(height: 20),
+
+            const SizedBox(height: 25),
+
+            /// Botão salvar
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+              ),
               onPressed: () async {
-                String? photoUrl;
-                if (_image != null) {
-                  photoUrl = await authProvider.uploadPhoto(_image!.path);
-                }
-                await authProvider.updateProfile(_nameController.text, photoUrl);
+
+                await authProvider.updateProfile(
+                  _nameController.text.trim(),
+                );
+
+                if (!mounted) return;
+
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Perfil atualizado!')));
+                  const SnackBar(
+                    content: Text('Perfil atualizado!'),
+                  ),
+                );
               },
-              child: Text('Salvar'),
+              child: const Text('Salvar'),
             ),
+
+            const SizedBox(height: 10),
+
+            /// Botão sair
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+                backgroundColor: Colors.red,
+              ),
               onPressed: () async {
+
                 await authProvider.signOut();
-                Navigator.of(context).pushReplacementNamed('/login');
+
+                if (!mounted) return;
+
+                Navigator.pushReplacementNamed(context, '/login');
               },
-              child: Text('Sair'),
+              child: const Text('Sair'),
             ),
           ],
         ),

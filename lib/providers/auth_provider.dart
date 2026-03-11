@@ -1,13 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class AuthProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   User? _user;
   User? get user => _user;
@@ -30,7 +27,7 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      throw e;
+      rethrow;
     }
     _isLoading = false;
     notifyListeners();
@@ -45,12 +42,11 @@ class AuthProvider with ChangeNotifier {
       await _firestore.collection('users').doc(result.user!.uid).set({
         'name': name,
         'email': email,
-        'photoUrl': null,
       });
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      throw e;
+      rethrow;
     }
     _isLoading = false;
     notifyListeners();
@@ -60,24 +56,13 @@ class AuthProvider with ChangeNotifier {
     await _auth.signOut();
   }
 
-  Future<void> updateProfile(String name, String? photoUrl) async {
+  Future<void> updateProfile(String name) async {
     if (_user != null) {
       await _firestore.collection('users').doc(_user!.uid).update({
         'name': name,
-        'photoUrl': photoUrl,
       });
       notifyListeners();
     }
-  }
-
-  Future<String?> uploadPhoto(String path) async {
-    if (_user != null) {
-      Reference ref = _storage.ref().child('profile_pics/${_user!.uid}');
-      UploadTask uploadTask = ref.putFile(File(path));
-      TaskSnapshot snapshot = await uploadTask;
-      return await snapshot.ref.getDownloadURL();
-    }
-    return null;
   }
 
   Stream<DocumentSnapshot> getUserData() {
