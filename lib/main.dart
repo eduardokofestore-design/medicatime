@@ -24,16 +24,13 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize timezone
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('America/Sao_Paulo'));
 
-  // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize notifications
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -47,7 +44,6 @@ Future<void> main() async {
       onDidReceiveBackgroundNotificationResponse,
 );
 
-  // Request notification permission (Android 13+)
   await requestNotificationPermission();
 
   runApp(const MyApp());
@@ -123,33 +119,6 @@ class MyApp extends StatelessWidget {
           ),
           cardColor: Color(0xFFF4FBF6),
         ),
-        darkTheme: ThemeData(
-          fontFamily: 'Roboto',
-          colorScheme: ColorScheme(
-            primary: Color(0xFF81C784),
-            onPrimary: Colors.black,
-            secondary: Color(0xFF81C784),
-            onSecondary: Colors.black,
-            surface: Color(0xFF1E1E1E),
-            onSurface: Color(0xFFFFFFFF),
-            error: Colors.red,
-            onError: Colors.white,
-            brightness: Brightness.dark,
-          ),
-          scaffoldBackgroundColor: Color(0xFF121212),
-          appBarTheme: AppBarTheme(
-            backgroundColor: Color(0xFF1E1E1E),
-            foregroundColor: Color(0xFFFFFFFF),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF81C784),
-              foregroundColor: Colors.black,
-            ),
-          ),
-          cardColor: Color(0xFF1E1E1E),
-        ),
-        themeMode: ThemeMode.system,
         initialRoute: '/',
         routes: {
           '/': (context) => const AuthWrapper(),

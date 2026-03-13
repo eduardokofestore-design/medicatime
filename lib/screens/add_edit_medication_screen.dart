@@ -24,6 +24,7 @@ class _AddEditMedicationScreenState extends State<AddEditMedicationScreen> {
 
   String _mealOption = "Nenhum";
   IconData _selectedIcon = Icons.medication;
+  String _medicationType = "Comprimido"; // Novo campo para armazenar o tipo como string
 
   Medication? _medication;
 
@@ -50,6 +51,11 @@ class _AddEditMedicationScreenState extends State<AddEditMedicationScreen> {
       _isDaily = _medication!.isDaily;
       _times = List.from(_medication!.times);
       _days = _medication!.days ?? [];
+
+      // Inicializar os novos campos
+      _mealOption = _medication!.mealOption;
+      _medicationType = _medication!.type;
+      _selectedIcon = _medIcons[_medicationType] ?? Icons.medication;
     }
   }
 
@@ -90,6 +96,7 @@ class _AddEditMedicationScreenState extends State<AddEditMedicationScreen> {
                     onSelected: (_) {
                       setState(() {
                         _selectedIcon = entry.value;
+                        _medicationType = entry.key; // Atualizar o tipo como string
                       });
                     },
                   );
@@ -255,15 +262,24 @@ class _AddEditMedicationScreenState extends State<AddEditMedicationScreen> {
                     times: _times,
                     days: _isDaily ? null : _days,
                     notes: _notesController.text,
+                    type: _medicationType,
+                    mealOption: _mealOption,
                   );
 
                   if (_medication == null) {
                     await provider.addMedication(med);
+                    // Após adicionar, navegar para a tela de lista de medicações
+                    if (context.mounted) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/medications',
+                        (route) => route.settings.name == '/',
+                      );
+                    }
                   } else {
                     await provider.updateMedication(med);
+                    if (context.mounted) Navigator.pop(context);
                   }
-
-                  if (context.mounted) Navigator.pop(context);
                 },
               ),
             ],

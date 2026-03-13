@@ -6,6 +6,8 @@ class Medication {
   List<String> times; // List of time strings like "08:00"
   List<int>? days; // For weekly, list of weekday numbers (1=Monday, 7=Sunday)
   String notes;
+  String type; // Type of medication: "Comprimido", "Cápsula", "Injeção", "Xarope"
+  String mealOption; // "Nenhum", "Antes", "Depois"
 
   Medication({
     required this.id,
@@ -15,6 +17,8 @@ class Medication {
     required this.times,
     this.days,
     required this.notes,
+    required this.type,
+    required this.mealOption,
   });
 
   Map<String, dynamic> toMap() {
@@ -25,6 +29,8 @@ class Medication {
       'times': times,
       'days': days,
       'notes': notes,
+      'type': type,
+      'mealOption': mealOption,
     };
   }
 
@@ -37,6 +43,8 @@ class Medication {
       times: List<String>.from(map['times']),
       days: map['days'] != null ? List<int>.from(map['days']) : null,
       notes: map['notes'],
+      type: map['type'] ?? 'Comprimido', // Default to Comprimido for backward compatibility
+      mealOption: map['mealOption'] ?? 'Nenhum', // Default to Nenhum for backward compatibility
     );
   }
 }
